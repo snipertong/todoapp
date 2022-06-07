@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="8dp" />
+
+    <EditText
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:hint="输入标题"
+        android:inputType="text"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
+        android:textStyle="bold" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="8dp" />
+
+    <EditText
+        android:id="@+id/content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:gravity="top"
+        android:inputType="text|textMultiLine"
+        android:lines="6" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        >
+
+        <TextView
+            android:id="@+id/in_date"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center" />
+
+        <Button
+            android:id="@+id/btn_date"
+            android:layout_width="50dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/time"
+
+            />
+    </LinearLayout>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="8dp" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="200dp">
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:id="@+id/img1"
+            android:layout_height="wrap_content">
+        </ImageView>
+        <Button
+            android:layout_width="50dp"
+            android:id="@+id/camera"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:background="@drawable/camera"
+            android:layout_height="50dp">
+
+        </Button>
+
+
+    </LinearLayout>
+
+
+
+
+
+</LinearLayout>
