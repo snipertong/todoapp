@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="horizontal"
-    android:weightSum="4">
+    android:layout_height="75dp"
+    android:orientation="horizontal">
 
-<!--    <CheckBox-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:id="@+id/choose"-->
-<!--        android:layout_height="wrap_content">-->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+        <CheckBox
+            android:layout_width="30dp"
+            android:layout_gravity="center"
+            android:layout_height="30dp"
+            android:focusable="false"
+            android:id="@+id/checkbox"
+            android:layout_weight="1">
 
-<!--    </CheckBox>-->
+        </CheckBox>
+
+    </LinearLayout>
+
+
+
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="2"
+        android:layout_weight="4"
         android:orientation="vertical"
         android:weightSum="4">
 
@@ -41,7 +53,7 @@
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:orientation="vertical">
 
         <TextView
@@ -66,18 +78,18 @@
         android:layout_width="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
+        android:gravity="center"
         android:layout_height="match_parent">
         <Button
             android:id="@+id/delete_button"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="center"
-            android:layout_marginTop="20dp"
+
             android:background="@drawable/delete"
             android:focusable="false"
             android:textColor="#fff"
             android:textSize="18sp" />
-
 
     </LinearLayout>
 
