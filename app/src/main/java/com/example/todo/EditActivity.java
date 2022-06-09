@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -30,16 +31,18 @@ import com.example.todo.widget.TodoCustomAdapter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.Date;
 
 public class EditActivity extends AppCompatActivity {
     private Button btnDatePicker,insert,cancel;
     private EditText inputTitle,inputContent;
-    private TextView txtDate;
+    private TextView txtDate,nowDate;
     private Button btnCamera;
     private ImageView imageView;
     private final int CAMERA_REQUEST = 10;
     private TodoCustomAdapter adapter;
     private Context context;
+    private Bitmap bit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,12 +50,26 @@ public class EditActivity extends AppCompatActivity {
         setContentView(R.layout.edit_layout);
 
 
+
         cancel=findViewById(R.id.cancel);
         insert=findViewById(R.id.insert);
         imageView=findViewById(R.id.image);
         btnCamera = findViewById(R.id.camera);
         btnDatePicker = findViewById(R.id.btn_date);
-        txtDate =findViewById(R.id.in_date);
+        txtDate =findViewById(R.id.end_date);
+
+        nowDate=findViewById(R.id.in_date);
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH)+1;
+        int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
+        nowDate.setText(year+"年"+month+"月"+dayOfMonth+"日");
+
+        Intent intent = getIntent();
+        long id = intent.getLongExtra("id", -1);
+        Toast.makeText(this, ""+id, Toast.LENGTH_SHORT).show();
+
+
         inputTitle = findViewById(R.id.title);
         inputContent = findViewById(R.id.content);
         btnCamera.setOnClickListener(new View.OnClickListener() {
@@ -101,18 +118,27 @@ public class EditActivity extends AppCompatActivity {
             public void onClick(View view) {
                 TodoOpenHelper todoOpenHelper = TodoOpenHelper.getInstance(getApplicationContext());
                 SQLiteDatabase db = todoOpenHelper.getWritableDatabase();
+
+                ByteArrayOutputStream os = null;
+                if(bit != null){
+                    os = new ByteArrayOutputStream();
+                    bit.compress(Bitmap.CompressFormat.PNG,100,os);
+                }
 //                @SuppressLint("ResourceType") Drawable drawable = context.getResources().getDrawable(R.id.image);
+
                 ContentValues contentValues = new ContentValues();
-//                contentValues.put(Contract.TODO_PHOTO,getPicture(drawable));
+                if(os != null){
+                    contentValues.put(Contract.TODO_PHOTO,os.toByteArray());
+                }
+                contentValues.put(Contract.TODO_END,nowDate.getText().toString());
                 contentValues.put(Contract.TODO_TITLE, inputTitle.getText().toString());
                 contentValues.put(Contract.TODO_CONTENT, inputContent.getText().toString());
                 contentValues.put(Contract.TODO_DATE, txtDate.getText().toString());
-                long currentEpoch = Calendar.getInstance().getTimeInMillis();
-                contentValues.put(Contract.TODO_ACCESSED, currentEpoch);
-                contentValues.put(Contract.TODO_CREATED, currentEpoch);
                 db.insert(Contract.TODO_TABLE_NAME, null, contentValues);
                 adapter.notifyDataSetChanged();
-
+//                if(adapter != null) {
+//                    adapter.notifyDataSetChanged();
+//                }
             }
         });
 
@@ -137,52 +163,12 @@ public class EditActivity extends AppCompatActivity {
         switch (requestCode) {
             case CAMERA_REQUEST:
                 if (resultCode == RESULT_OK) {
-                    Bitmap bitmap = (Bitmap) data.getExtras().get("data");
-                    imageView.setImageBitmap(bitmap);
+                    bit = (Bitmap) data.getExtras().get("data");
+                    imageView.setImageBitmap(bit);
 
                 }
                 break;
         }
     }
-
-
-
-//    public byte[] bitmabToBytes(Context context){
-//        //将图片转化为位图
-//        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.id.image);
-//        int size = bitmap.getWidth() * bitmap.getHeight() * 4;
-//        //创建一个字节数组输出流,流的大小为size
-//        ByteArrayOutputStream baos= new ByteArrayOutputStream(size);
-//        try {
-//            //设置位图的压缩格式，质量为100%，并放入字节数组输出流中
-//            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-//            //将字节数组输出流转化为字节数组byte[]
-//            byte[] imagedata = baos.toByteArray();
-//            return imagedata;
-//        }catch (Exception e){
-//        }finally {
-//            try {
-//                bitmap.recycle();
-//                baos.close();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        return new byte[0];
-//    }
-private byte[] getPicture(Drawable drawable) {
-    if(drawable == null) {
-        return null;
-    }
-    BitmapDrawable bd = (BitmapDrawable) drawable;
-    Bitmap bitmap = bd.getBitmap();
-    ByteArrayOutputStream os = new ByteArrayOutputStream();
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
-    return os.toByteArray();
-}
-
-
-
-
 
 }
