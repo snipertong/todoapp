@@ -21,6 +21,7 @@ import androidx.appcompat.widget.PopupMenu;
 
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,6 +30,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.todo.Sql.Contract;
 import com.example.todo.Sql.TodoOpenHelper;
@@ -39,17 +41,20 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 public class ListActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static View alertView, expandView;
     private ArrayList<ListItem> todos;
-    private Button btnDatePicker;
     private TextView txtDate;
     private TodoCustomAdapter adapter;
     private ListView listView;
     private FloatingActionButton fab;
     private ImageView navi;
+    private Button btnDatePicker,insert,cancel;
+    private Button btnCamera;
+    private ImageView imageView;
 
 
     @Override
@@ -78,13 +83,13 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         do {
             if (cursor == null || cursor.getCount() == 0) break;
             @SuppressLint("Range") String title = cursor.getString(cursor.getColumnIndex(Contract.TODO_TITLE));
-//            @SuppressLint("Range") byte[] photo = cursor.getBlob(cursor.getColumnIndex(Contract.TODO_PHOTO));
+            @SuppressLint("Range") byte[] photo = cursor.getBlob(cursor.getColumnIndex(Contract.TODO_PHOTO));
             @SuppressLint("Range") String content = cursor.getString(cursor.getColumnIndex(Contract.TODO_CONTENT));
             @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(Contract.TODO_DATE));
-            @SuppressLint("Range") long createdEpoch = cursor.getLong(cursor.getColumnIndex(Contract.TODO_CREATED));
-            @SuppressLint("Range") long accessedEpoch = cursor.getLong(cursor.getColumnIndex(Contract.TODO_ACCESSED));
+            @SuppressLint("Range") String end = cursor.getString(cursor.getColumnIndex(Contract.TODO_END));
+//            @SuppressLint("Range") int status = cursor.getInt(cursor.getColumnIndex(Contract.TODO_STATUS));
             @SuppressLint("Range") long id = cursor.getLong(cursor.getColumnIndex(Contract.TODO_ID));
-            ListItem listItem = new ListItem(title, content, id,date, createdEpoch, accessedEpoch);
+            ListItem listItem = new ListItem(title, content, id,date,end,photo);
             todos.add(listItem);
         } while (cursor.moveToNext());
 
@@ -113,93 +118,106 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 builder.setView(expandView);
                 TextView todoTitle = expandView.findViewById(R.id.expanded_todo_title);
                 TextView todoContent = expandView.findViewById(R.id.expanded_todo_content);
-//                ImageView todoPhoto =expandView.findViewById(R.id.expanded_todo_photo);
+                ImageView todoPhoto =expandView.findViewById(R.id.expanded_todo_photo);
                 todoTitle.setText(listItem.getTitle());
                 todoContent.setText(listItem.getContent());
-//                todoPhoto.setImageDrawable(getDrawable().get(0));
-                long currentEpoch = Calendar.getInstance().getTimeInMillis();
-                listItem.setAccessed(currentEpoch);
+
+
+                if(getDrawable().size() != 0) {
+                                 todoPhoto.setImageDrawable(getDrawable().get(0));
+                }
+
+//                todoPhoto.setImageBitmap();
 
                 TodoOpenHelper todoOpenHelper = TodoOpenHelper.getInstance(getApplicationContext());
                 SQLiteDatabase db = todoOpenHelper.getReadableDatabase();
                 ContentValues contentValues = new ContentValues();
                 contentValues.put(Contract.TODO_ID, listItem.getId());
-                contentValues.put(Contract.TODO_ACCESSED, String.valueOf(currentEpoch));
                 db.update(Contract.TODO_TABLE_NAME, contentValues, Contract.TODO_ID + "=?", null);
 
                 builder.setView(expandView);
-                builder.setPositiveButton("Share", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Intent sendIntent = new Intent();
-                        sendIntent.setAction(Intent.ACTION_SEND);
-                        sendIntent.setType("text/plain");
-                        sendIntent.putExtra(Intent.EXTRA_TEXT, listItem.getTitle() + "\n" + listItem.getContent());
-                        startActivity(sendIntent);
-                    }
-                });
-
                 builder.setNegativeButton("Cancel", null);
                 builder.show();
             }
-        });
 
+
+        });
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, final long l) {
-                Log.i("TAG", "onItemLongClick: " + todos.size());
-                Log.i("TAG", "onItemLongClick: ");
-                AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
-                TextView title = new TextView(ListActivity.this);
-                title.setText("Add/Edit a task");
-                title.setBackgroundColor(Color.DKGRAY);
-                title.setPadding(10, 10, 10, 10);
-                title.setGravity(Gravity.CENTER);
-                title.setTextColor(Color.WHITE);
-                title.setTextSize(20);
-                builder.setCustomTitle(title);
-                alertView = getLayoutInflater().inflate(R.layout.item_todo, null);
-                builder.setView(alertView);
-                btnDatePicker = alertView.findViewById(R.id.btn_date);
-                txtDate = alertView.findViewById(R.id.in_date);
-                btnDatePicker.setOnClickListener(ListActivity.this);
-
-                final ListItem listItem = todos.get(i);
-                final EditText inputTitle = alertView.findViewById(R.id.title);
-                final EditText inputContent = alertView.findViewById(R.id.content);
-                inputTitle.setText(listItem.getTitle());
-                inputContent.setText(listItem.getContent());
-                txtDate.setText(listItem.getDate());
-
-                builder.setPositiveButton("DONE", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        TodoOpenHelper todoOpenHelper = TodoOpenHelper.getInstance(getApplicationContext());
-                        SQLiteDatabase db = todoOpenHelper.getWritableDatabase();
-
-                        long currentEpoch = Calendar.getInstance().getTimeInMillis();
-                        Log.i("Edit Todo epoch", String.valueOf(currentEpoch));
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(Contract.TODO_ID, listItem.getId());
-                        contentValues.put(Contract.TODO_TITLE, inputTitle.getText().toString());
-                        contentValues.put(Contract.TODO_CONTENT, inputContent.getText().toString());
-                        contentValues.put(Contract.TODO_DATE, txtDate.getText().toString());
-                        contentValues.put(Contract.TODO_ACCESSED, currentEpoch);
-                        db.update(Contract.TODO_TABLE_NAME, contentValues, Contract.TODO_ID + "=?", null);
-                        listItem.setTitle(inputTitle.getText().toString());
-                        listItem.setContent(inputContent.getText().toString());
-                        listItem.setDate(txtDate.getText().toString());
-                        listItem.setAccessed(currentEpoch);
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-
-                builder.setNegativeButton("CANCEL", null);
-                builder.show();
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(ListActivity.this, "1111", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
+
+
+
+//        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, final long l) {
+//                Log.i("TAG", "onItemLongClick: " + todos.size());
+//                Log.i("TAG", "onItemLongClick: ");
+//                AlertDialog.Builder builder = new AlertDialog.Builder(ListActivity.this);
+////                TextView title = new TextView(ListActivity.this);
+////                title.setText("Add/Edit a task");
+////                title.setBackgroundColor(Color.DKGRAY);
+////                title.setPadding(10, 10, 10, 10);
+////                title.setGravity(Gravity.CENTER);
+////                title.setTextColor(Color.WHITE);
+////                title.setTextSize(20);
+////                builder.setCustomTitle(title);
+//                alertView = getLayoutInflater().inflate(R.layout.edit_layout, null);
+//                builder.setView(alertView);
+//                btnDatePicker = alertView.findViewById(R.id.btn_date);
+//                txtDate = alertView.findViewById(R.id.in_date);
+//                btnDatePicker.setOnClickListener(ListActivity.this);
+//
+//                final ListItem listItem = todos.get(i);
+//                final EditText inputTitle = alertView.findViewById(R.id.title);
+//                final EditText inputContent = alertView.findViewById(R.id.content);
+//                inputTitle.setText(listItem.getTitle());
+//                inputContent.setText(listItem.getContent());
+//                txtDate.setText(listItem.getDate());
+//
+//                builder.setPositiveButton("DONE", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        TodoOpenHelper todoOpenHelper = TodoOpenHelper.getInstance(getApplicationContext());
+//                        SQLiteDatabase db = todoOpenHelper.getWritableDatabase();
+//
+//                        long currentEpoch = Calendar.getInstance().getTimeInMillis();
+//                        Log.i("Edit Todo epoch", String.valueOf(currentEpoch));
+//                        ContentValues contentValues = new ContentValues();
+//                        contentValues.put(Contract.TODO_ID, listItem.getId());
+//                        contentValues.put(Contract.TODO_TITLE, inputTitle.getText().toString());
+//                        contentValues.put(Contract.TODO_CONTENT, inputContent.getText().toString());
+//                        contentValues.put(Contract.TODO_DATE, txtDate.getText().toString());
+//                        contentValues.put(Contract.TODO_ACCESSED, currentEpoch);
+//                        db.update(Contract.TODO_TABLE_NAME, contentValues, Contract.TODO_ID + "=?", null);
+//                        listItem.setTitle(inputTitle.getText().toString());
+//                        listItem.setContent(inputContent.getText().toString());
+//                        listItem.setDate(txtDate.getText().toString());
+//                        listItem.setAccessed(currentEpoch);
+//                        adapter.notifyDataSetChanged();
+//                    }
+//                });
+//
+//                builder.setNegativeButton("CANCEL", null);
+//
+//
+//
+//
+//
+//
+//                builder.show();
+//                return true;
+//            }
+//        });
     }
+
+
+
+
 
     @Override
     public void onClick(View view) {
@@ -211,10 +229,21 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.fab:
                 Intent intent=new Intent(ListActivity.this, EditActivity.class);
                 startActivity(intent);
-
                 break;
         }
     }
+    //实现返回时刷新
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Intent intent = getIntent();
+//        overridePendingTransition(0, 0);
+        finish();
+//        overridePendingTransition(0, 0);
+        startActivity(intent);
+    }
+
+
 
     private void showPopupMenu(View view) {
         // View当前PopupMenu显示的相对View的位置
@@ -241,32 +270,33 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         popupMenu.show();
     }
 
-//    private ArrayList<Drawable> getDrawable() {
-//
-//        TodoOpenHelper todoOpenHelper = TodoOpenHelper.getInstance(getApplicationContext());
-//        SQLiteDatabase db = todoOpenHelper.getReadableDatabase();
-//
-//        ArrayList<Drawable> drawables = new ArrayList<Drawable>();
-//        //查询数据库
-//        Cursor c = db.query(Contract.TODO_TABLE_NAME, null, null, null, null, null, null);
-//
-//        //遍历数据
-//        if(c != null && c.getCount() != 0) {
-//            while(c.moveToNext()) {
-//                //获取数据
-//                @SuppressLint("Range")byte[] b = c.getBlob(c.getColumnIndex(Contract.TODO_PHOTO));
-//
-//                //将获取的数据转换成drawable
-//                Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length, null);
-//
-//
-//                BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
-//                Drawable drawable = bitmapDrawable;
-//                drawables.add(drawable);
-//            }
-//        }
-//        return drawables;
-//    }
+
+    private ArrayList<Drawable> getDrawable() {
+
+        TodoOpenHelper todoOpenHelper = TodoOpenHelper.getInstance(getApplicationContext());
+        SQLiteDatabase db = todoOpenHelper.getReadableDatabase();
+
+        ArrayList<Drawable> drawables = new ArrayList<Drawable>();
+        //查询数据库
+        Cursor c = db.query(Contract.TODO_TABLE_NAME, null, null, null, null, null, null);
+
+        //遍历数据
+        if(c != null && c.getCount() != 0) {
+            while(c.moveToNext()) {
+                //获取数据
+                @SuppressLint("Range")byte[] b = c.getBlob(c.getColumnIndex(Contract.TODO_PHOTO));
+
+                //将获取的数据转换成drawable
+                Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length, null);
+
+
+                BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
+                Drawable drawable = bitmapDrawable;
+                drawables.add(drawable);
+            }
+        }
+        return drawables;
+    }
 
 
 }

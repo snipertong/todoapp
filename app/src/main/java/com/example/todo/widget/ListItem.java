@@ -5,38 +5,52 @@ package com.example.todo.widget;
  */
 
 public class ListItem {
+    public static final int FINISH=103;
+    public static final int UNFINISH=104;
     private String title;
     private String content;
-    private String date;
-    private long created;
-    private long accessed;
+    private String date,end;
+    private int status;
     private long id;
     private byte[] photo;
 
-    public ListItem(String title, String content, long id,String date, long epoch1, long epoch2) {
+    public ListItem(String title, String content, long id, String date, String end, byte[] photo ) {
         this.title = title;
         this.content = content;
         this.date = date;
         this.id = id;
-//        this.photo=photo;
-        this.created = epoch1;
-        this.accessed = epoch2;
+        this.photo=photo;
+        this.status=status;
+        this.end = end;
+
+
     }
 
     public long getId() {
+
         return id;
     }
-
     public void setId(int id) {
+
         this.id = id;
     }
 
+
     public byte[] getPhoto() {
+
         return photo;
     }
-
     public void setPhoto(byte[] photo) {
+
         this.photo = photo;
+    }
+
+
+    public int getStatus() {
+        return status;
+    }
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String getTitle() {
@@ -55,6 +69,16 @@ public class ListItem {
         this.date = date;
     }
 
+
+    public String getEnd() {
+        return end;
+    }
+
+    public void setEnd(String end) {
+        this.end = end;
+    }
+
+
     public String getContent() {
         return content;
     }
@@ -63,25 +87,7 @@ public class ListItem {
         this.content = content;
     }
 
-    public long getCreated() {
-        return created;
-    }
 
-    public long getAccessed() {
-        return accessed;
-    }
-
-    public void setAccessed(long accessed) {
-        this.accessed = accessed;
-    }
-
-//    public byte[] getTvatar() {
-//        return photo;
-//    }
-//
-//    public void setTvatar(byte[] photo) {
-//        this.photo = photo;
-//    }
 
 
 }

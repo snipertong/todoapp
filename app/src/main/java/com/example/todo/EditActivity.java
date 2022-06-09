@@ -130,15 +130,16 @@ public class EditActivity extends AppCompatActivity {
                 if(os != null){
                     contentValues.put(Contract.TODO_PHOTO,os.toByteArray());
                 }
-                contentValues.put(Contract.TODO_END,nowDate.getText().toString());
+                contentValues.put(Contract.TODO_DATE,nowDate.getText().toString());
                 contentValues.put(Contract.TODO_TITLE, inputTitle.getText().toString());
                 contentValues.put(Contract.TODO_CONTENT, inputContent.getText().toString());
-                contentValues.put(Contract.TODO_DATE, txtDate.getText().toString());
+                contentValues.put(Contract.TODO_END, txtDate.getText().toString());
                 db.insert(Contract.TODO_TABLE_NAME, null, contentValues);
-                adapter.notifyDataSetChanged();
+
 //                if(adapter != null) {
 //                    adapter.notifyDataSetChanged();
 //                }
+                finish();
             }
         });
 
@@ -154,7 +155,6 @@ public class EditActivity extends AppCompatActivity {
 
 
     }
-
     //拍照并显示到imageview
 
     @Override
