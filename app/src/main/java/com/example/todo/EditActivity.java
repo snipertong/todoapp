@@ -77,17 +77,14 @@ public class EditActivity extends AppCompatActivity {
             String end=intent.getStringExtra("3");
             String date=intent.getStringExtra("4");
             byte[] photo=intent.getByteArrayExtra("5");
-
             inputTitle.setText(title);
             inputContent.setText(content);
             nowDate.setText(date);
             txtDate.setText(end);
-
-            Bitmap bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length, null);
-            BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
-            Drawable drawable = bitmapDrawable;
-
-            if (drawable != null){
+            if (photo != null){
+                Bitmap bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length, null);
+                BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
+                Drawable drawable = bitmapDrawable;
                 imageView.setImageDrawable(drawable);}
 
         }

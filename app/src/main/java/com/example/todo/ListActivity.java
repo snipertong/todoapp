@@ -126,15 +126,14 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 todoTitle.setText(listItem.getTitle());
                 todoContent.setText(listItem.getContent());
 
+
                 //将图片显示出来
                 byte[] photo = listItem.getPhoto();
-                Bitmap bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length, null);
-                BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
-                Drawable drawable = bitmapDrawable;
-
-                if (drawable != null){
+                if (photo != null){
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length, null);
+                    BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
+                    Drawable drawable = bitmapDrawable;
                 todoPhoto.setImageDrawable(drawable);}
-
                 builder.setView(expandView);
                 builder.setNegativeButton("取消", null);
                 builder.show();
