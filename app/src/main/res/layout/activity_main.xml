@@ -18,10 +18,44 @@
         </com.example.todo.widget.TitleLayout>
 
         <CalendarView
-            android:id="@+id/calendarViewId"
+            android:id="@+id/calendarView"
             android:layout_width="match_parent"
             android:layout_height="300dp"
             />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_height="30dp">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="您在"
+                android:gravity="center|right"
+                android:textColor="@color/black"
+                android:layout_height="30dp"
+                tools:ignore="Suspicious0dp">
+            </TextView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:id="@+id/date"
+                android:gravity="center|left"
+                android:textColor="@color/solar_background"
+                android:layout_height="30dp">
+            </TextView>
+
+            <TextView
+                android:layout_width="0dp"
+                android:text="的事项"
+                android:layout_weight="1"
+                android:gravity="center|left"
+                android:textColor="@color/black"
+                android:layout_height="30dp">
+            </TextView>
+
+        </LinearLayout>
+
+
 
         <ListView
             android:id="@+id/todo_list"
