@@ -55,6 +55,10 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
     private Button btnDatePicker,insert,cancel;
     private Button btnCamera;
     private ImageView imageView;
+    private byte[] photo;
+    private Bitmap bm;
+    private Drawable drawable;
+
 
 
     @Override
@@ -122,13 +126,14 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 todoTitle.setText(listItem.getTitle());
                 todoContent.setText(listItem.getContent());
 
+                //将图片显示出来
+                byte[] photo = listItem.getPhoto();
+                Bitmap bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length, null);
+                BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
+                Drawable drawable = bitmapDrawable;
 
-                if(getDrawable().size() != 0) {
-                                 todoPhoto.setImageDrawable(getDrawable().get(0));
-                }
-
-//                todoPhoto.setImageBitmap();
-
+                if (drawable != null){
+                todoPhoto.setImageDrawable(drawable);}
                 TodoOpenHelper todoOpenHelper = TodoOpenHelper.getInstance(getApplicationContext());
                 SQLiteDatabase db = todoOpenHelper.getReadableDatabase();
                 ContentValues contentValues = new ContentValues();
@@ -136,7 +141,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 db.update(Contract.TODO_TABLE_NAME, contentValues, Contract.TODO_ID + "=?", null);
 
                 builder.setView(expandView);
-                builder.setNegativeButton("Cancel", null);
+                builder.setNegativeButton("取消", null);
                 builder.show();
             }
 
@@ -145,10 +150,17 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(ListActivity.this, "1111", Toast.LENGTH_SHORT).show();
+                final ListItem listItem = todos.get(i);
+                Long id =listItem.getId();
+                Toast.makeText(ListActivity.this, "长按", Toast.LENGTH_SHORT).show();
+                Intent intent=new Intent(ListActivity.this,EditActivity.class);
+                intent.putExtra("id",id);
+                startActivity(intent);
                 return true;
             }
         });
+
+
 
 
 
@@ -192,31 +204,29 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
 //                        contentValues.put(Contract.TODO_TITLE, inputTitle.getText().toString());
 //                        contentValues.put(Contract.TODO_CONTENT, inputContent.getText().toString());
 //                        contentValues.put(Contract.TODO_DATE, txtDate.getText().toString());
-//                        contentValues.put(Contract.TODO_ACCESSED, currentEpoch);
+//
 //                        db.update(Contract.TODO_TABLE_NAME, contentValues, Contract.TODO_ID + "=?", null);
 //                        listItem.setTitle(inputTitle.getText().toString());
 //                        listItem.setContent(inputContent.getText().toString());
 //                        listItem.setDate(txtDate.getText().toString());
-//                        listItem.setAccessed(currentEpoch);
+//
 //                        adapter.notifyDataSetChanged();
 //                    }
 //                });
 //
 //                builder.setNegativeButton("CANCEL", null);
 //
-//
-//
-//
-//
-//
 //                builder.show();
 //                return true;
 //            }
 //        });
+
+
+
+
+
+
     }
-
-
-
 
 
     @Override
@@ -268,34 +278,6 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
         popupMenu.show();
-    }
-
-
-    private ArrayList<Drawable> getDrawable() {
-
-        TodoOpenHelper todoOpenHelper = TodoOpenHelper.getInstance(getApplicationContext());
-        SQLiteDatabase db = todoOpenHelper.getReadableDatabase();
-
-        ArrayList<Drawable> drawables = new ArrayList<Drawable>();
-        //查询数据库
-        Cursor c = db.query(Contract.TODO_TABLE_NAME, null, null, null, null, null, null);
-
-        //遍历数据
-        if(c != null && c.getCount() != 0) {
-            while(c.moveToNext()) {
-                //获取数据
-                @SuppressLint("Range")byte[] b = c.getBlob(c.getColumnIndex(Contract.TODO_PHOTO));
-
-                //将获取的数据转换成drawable
-                Bitmap bitmap = BitmapFactory.decodeByteArray(b, 0, b.length, null);
-
-
-                BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
-                Drawable drawable = bitmapDrawable;
-                drawables.add(drawable);
-            }
-        }
-        return drawables;
     }
 
 
