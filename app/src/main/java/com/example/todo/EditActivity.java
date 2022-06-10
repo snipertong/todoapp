@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -26,6 +27,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.todo.Sql.Contract;
 import com.example.todo.Sql.TodoOpenHelper;
+import com.example.todo.widget.ListItem;
 import com.example.todo.widget.TodoCustomAdapter;
 
 import java.io.ByteArrayOutputStream;
@@ -44,21 +46,22 @@ public class EditActivity extends AppCompatActivity {
     private Context context;
     private Bitmap bit;
 
+    @SuppressLint("Range")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_layout);
 
-
-
+        inputTitle = findViewById(R.id.title);
+        inputContent = findViewById(R.id.content);
         cancel=findViewById(R.id.cancel);
         insert=findViewById(R.id.insert);
         imageView=findViewById(R.id.image);
         btnCamera = findViewById(R.id.camera);
         btnDatePicker = findViewById(R.id.btn_date);
         txtDate =findViewById(R.id.end_date);
-
         nowDate=findViewById(R.id.in_date);
+
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH)+1;
@@ -68,10 +71,27 @@ public class EditActivity extends AppCompatActivity {
         Intent intent = getIntent();
         long id = intent.getLongExtra("id", -1);
         Toast.makeText(this, ""+id, Toast.LENGTH_SHORT).show();
+        if (id>0){
+            String title=intent.getStringExtra("1");
+            String content=intent.getStringExtra("2");
+            String end=intent.getStringExtra("3");
+            String date=intent.getStringExtra("4");
+            byte[] photo=intent.getByteArrayExtra("5");
 
+            inputTitle.setText(title);
+            inputContent.setText(content);
+            nowDate.setText(date);
+            txtDate.setText(end);
 
-        inputTitle = findViewById(R.id.title);
-        inputContent = findViewById(R.id.content);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(photo, 0, photo.length, null);
+            BitmapDrawable bitmapDrawable = new BitmapDrawable(bitmap);
+            Drawable drawable = bitmapDrawable;
+
+            if (drawable != null){
+                imageView.setImageDrawable(drawable);}
+
+        }
+
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,18 +134,19 @@ public class EditActivity extends AppCompatActivity {
         });
         //插入数据
         insert.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("Range")
             @Override
             public void onClick(View view) {
                 TodoOpenHelper todoOpenHelper = TodoOpenHelper.getInstance(getApplicationContext());
                 SQLiteDatabase db = todoOpenHelper.getWritableDatabase();
+
+                String string = String.valueOf(id);
 
                 ByteArrayOutputStream os = null;
                 if(bit != null){
                     os = new ByteArrayOutputStream();
                     bit.compress(Bitmap.CompressFormat.PNG,100,os);
                 }
-//                @SuppressLint("ResourceType") Drawable drawable = context.getResources().getDrawable(R.id.image);
-
                 ContentValues contentValues = new ContentValues();
                 if(os != null){
                     contentValues.put(Contract.TODO_PHOTO,os.toByteArray());
@@ -134,15 +155,14 @@ public class EditActivity extends AppCompatActivity {
                 contentValues.put(Contract.TODO_TITLE, inputTitle.getText().toString());
                 contentValues.put(Contract.TODO_CONTENT, inputContent.getText().toString());
                 contentValues.put(Contract.TODO_END, txtDate.getText().toString());
-                db.insert(Contract.TODO_TABLE_NAME, null, contentValues);
-
-//                if(adapter != null) {
-//                    adapter.notifyDataSetChanged();
-//                }
+                if (id>0){
+                    db.update(Contract.TODO_TABLE_NAME,contentValues,Contract.TODO_ID + "=?",new String[]{string});
+                }else {
+                    db.insert(Contract.TODO_TABLE_NAME, null, contentValues);
+                }
                 finish();
             }
         });
-
 
 
         //返回
@@ -155,8 +175,8 @@ public class EditActivity extends AppCompatActivity {
 
 
     }
-    //拍照并显示到imageview
 
+    //拍照并显示到imageview
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
