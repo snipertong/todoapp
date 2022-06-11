@@ -5,24 +5,137 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#ffffff"
-    android:fitsSystemWindows="true"
-    tools:context="com.example.todo.CountActivity"
-    tools:ignore="RtlHardcoded,HardcodedText,RtlSymmetry,SmallSp">
+    tools:context=".CountActivity">
+
+    <com.example.todo.widget.TitleLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </com.example.todo.widget.TitleLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        >
+
+        <TextView
+            android:id="@+id/start_date"
+            android:layout_width="300dp"
+            android:layout_margin="10dp"
+            android:textSize="50px"
+            android:hint="请选择开始日期"
+            android:textColor="@color/blue"
+            android:background="@drawable/edit_background"
+            android:layout_height="match_parent"
+            />
 
 
-    <com.example.todo.widget.DragFloatActionButton
-        android:id="@+id/fb"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        app:borderWidth="0dp"
-        app:backgroundTint="#FFFFFF"
-        app:rippleColor="#008577"
-        android:src="@drawable/add1"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        />
+        <Button
+            android:id="@+id/start"
+            android:layout_margin="10dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/time" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        >
 
+        <TextView
+            android:id="@+id/end_date"
+            android:layout_width="300dp"
+            android:layout_margin="10dp"
+            android:textSize="50px"
+            android:hint="请选择截止日期"
+            android:textColor="@color/blue"
+            android:background="@drawable/edit_background"
+            android:layout_height="match_parent"
+            />
+
+
+        <Button
+            android:id="@+id/end"
+            android:layout_margin="10dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/time" />
+    </LinearLayout>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+    </Space>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="选择日期范围内todo数量"
+            android:textColor="@color/blue"
+            android:layout_height="match_parent">
+        </TextView>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:id="@+id/number"
+            android:layout_height="match_parent">
+        </TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="完成todo数量"
+            android:textColor="@color/blue"
+
+            android:layout_height="match_parent">
+        </TextView>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:id="@+id/finish"
+            android:layout_height="match_parent">
+        </TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="取消todo数量"
+            android:textColor="@color/blue"
+
+            android:layout_height="match_parent">
+        </TextView>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:id="@+id/cancel"
+            android:layout_height="match_parent">
+        </TextView>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:text="逾期todo数量"
+            android:textColor="@color/blue"
+
+            android:layout_height="match_parent">
+        </TextView>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:id="@+id/delay"
+            android:layout_height="match_parent">
+        </TextView>
+    </LinearLayout>
 
 
 
