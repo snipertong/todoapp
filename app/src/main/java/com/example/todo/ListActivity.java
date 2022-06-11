@@ -3,13 +3,11 @@ package com.example.todo;
 
 import android.annotation.SuppressLint;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -19,14 +17,10 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,13 +29,11 @@ import android.widget.Toast;
 import com.example.todo.Sql.Contract;
 import com.example.todo.Sql.TodoOpenHelper;
 import com.example.todo.widget.ListItem;
-import com.example.todo.widget.TodoCustomAdapter;
+import com.example.todo.adapter.TodoCustomAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 public class ListActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -58,6 +50,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
     private byte[] photo;
     private Bitmap bm;
     private Drawable drawable;
+    private static String REGEX_CHINESE = "[\u4e00-\u9fa5]";
 
 
 
@@ -83,7 +76,6 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
         if (cursor != null && cursor.getCount() > 0) {
             cursor.moveToFirst();
         }
-
         do {
             if (cursor == null || cursor.getCount() == 0) break;
             @SuppressLint("Range") String title = cursor.getString(cursor.getColumnIndex(Contract.TODO_TITLE));
@@ -91,13 +83,48 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
             @SuppressLint("Range") String content = cursor.getString(cursor.getColumnIndex(Contract.TODO_CONTENT));
             @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(Contract.TODO_DATE));
             @SuppressLint("Range") String end = cursor.getString(cursor.getColumnIndex(Contract.TODO_END));
-//            @SuppressLint("Range") int status = cursor.getInt(cursor.getColumnIndex(Contract.TODO_STATUS));
+            @SuppressLint("Range") int status = cursor.getInt(cursor.getColumnIndex(Contract.TODO_STATUS));
             @SuppressLint("Range") long id = cursor.getLong(cursor.getColumnIndex(Contract.TODO_ID));
-            ListItem listItem = new ListItem(title, content, id,date,end,photo);
+            ListItem listItem = new ListItem(title, content, id,date,status,end,photo);
             todos.add(listItem);
-        } while (cursor.moveToNext());
 
+            if (listItem.getStatus()==0){
+                Long it =listItem.getId();
+                String string2 = String.valueOf(it);
+
+                String string=listItem.getEnd();
+                string = string.replaceAll(REGEX_CHINESE,"");
+                int b=Integer.parseInt(string);
+
+                final Calendar c = Calendar.getInstance();
+                int year = c.get(Calendar.YEAR);
+                int month = c.get(Calendar.MONTH)+1;
+                int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
+                String str=year+"年"+month+"月"+dayOfMonth+"日";
+                str = str.replaceAll(REGEX_CHINESE,"");
+                int a=Integer.parseInt(str);
+                if (a>b){
+                    ContentValues contentValues=new ContentValues();
+                    contentValues.put(Contract.TODO_STATUS,2);
+                    db.update(Contract.TODO_TABLE_NAME,contentValues,Contract.TODO_ID + "=?",new String[]{string2});
+                }
+            }
+
+
+
+
+
+
+
+        } while (cursor.moveToNext());
         cursor.close();
+
+
+
+
+
+
+        //删除
         adapter = new TodoCustomAdapter(this, todos, new TodoCustomAdapter.DeleteButtonClickListener() {
             @Override
             public void onDeleteClicked(int position, View view) {
@@ -109,8 +136,8 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 adapter.notifyDataSetChanged();
             }
         });
-
         listView.setAdapter(adapter);
+        //点击事件
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -126,7 +153,6 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
                 todoTitle.setText(listItem.getTitle());
                 todoContent.setText(listItem.getContent());
 
-
                 //将图片显示出来
                 byte[] photo = listItem.getPhoto();
                 if (photo != null){
@@ -141,6 +167,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
 
 
         });
+        //长按事件
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -165,6 +192,7 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+
     }
 
 
@@ -186,9 +214,9 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
     protected void onRestart() {
         super.onRestart();
         Intent intent = getIntent();
-//        overridePendingTransition(0, 0);
+        overridePendingTransition(0, 0);
         finish();
-//        overridePendingTransition(0, 0);
+        overridePendingTransition(0, 0);
         startActivity(intent);
     }
 
