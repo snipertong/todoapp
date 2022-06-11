@@ -112,15 +112,8 @@ public class ListActivity extends AppCompatActivity implements View.OnClickListe
 
 
 
-
-
-
-
         } while (cursor.moveToNext());
         cursor.close();
-
-
-
 
 
 

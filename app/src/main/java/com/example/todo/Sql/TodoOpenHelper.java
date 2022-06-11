@@ -14,7 +14,7 @@ public class TodoOpenHelper extends SQLiteOpenHelper {
 
 
 
-    private TodoOpenHelper(Context context) {
+    public TodoOpenHelper(Context context) {
         super(context, Contract.DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -31,9 +31,9 @@ public class TodoOpenHelper extends SQLiteOpenHelper {
                 Contract.TODO_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 Contract.TODO_TITLE + " TEXT, " +
                 Contract.TODO_DATE + " TEXT, " +
-                Contract.TODO_PHOTO+ " BLOB,"+
+                Contract.TODO_PHOTO+ " BLOB, "+
                 Contract.TODO_STATUS+" INT,"+
-                Contract.TODO_END+" TEXT,"+
+                Contract.TODO_END+" TEXT, "+
                 Contract.TODO_CONTENT + " TEXT)";
         sqLiteDatabase.execSQL(query);
     }

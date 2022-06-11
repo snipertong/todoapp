@@ -28,6 +28,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
     private Context context;
@@ -39,8 +40,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private CalendarAdapter adapter;
     private ImageView navi;
     private boolean flag=false;
-    private String number1,number2;
-    private String[] selectionArgs,selectionArgs2;
+    private String[] selectionArgs;
+    private String string1,string;
 
 
     @Override
@@ -67,13 +68,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
             @Override
             public void onSelectedDayChange(CalendarView view, int year, int month1, int dayOfMonth) {
-                flag=true;
-                todos = new ArrayList<>();
-                TodoOpenHelper todoOpenHelper = TodoOpenHelper.getInstance(getApplicationContext());
-                SQLiteDatabase db = todoOpenHelper.getReadableDatabase();
-                int month = month1+1;
-                date.setText(year+"年"+month+"月"+dayOfMonth+"日");
-                number2 = date.getText().toString();
+//                int month = month1+1;
+//                date.setText(year+"年"+month+"月"+dayOfMonth+"日");
+//                String string1=date.getText().toString();
+
+
             }
         });
         
@@ -82,19 +81,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int month = c.get(Calendar.MONTH)+1;
         int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
         date.setText(year+"年"+month+"月"+dayOfMonth+"日");
-        number1 = date.getText().toString();
-        selectionArgs = new  String[]{number1};
-
-
-//        if (flag=true){
-//            selectionArgs = new  String[]{number2};
-//            Toast.makeText(context, "1", Toast.LENGTH_SHORT).show();
-//        }else
-//        {
-//            selectionArgs = new  String[]{number1};
-//            Toast.makeText(context, "2", Toast.LENGTH_SHORT).show();
-//        }
-
+        string=date.getText().toString();
+        selectionArgs = new  String[]{string};
 
         //显示当天item
         todos = new ArrayList<>();
@@ -111,9 +99,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @SuppressLint("Range") String content = cursor.getString(cursor.getColumnIndex(Contract.TODO_CONTENT));
             @SuppressLint("Range") String date = cursor.getString(cursor.getColumnIndex(Contract.TODO_DATE));
             @SuppressLint("Range") String end = cursor.getString(cursor.getColumnIndex(Contract.TODO_END));
-//            @SuppressLint("Range") int status = cursor.getInt(cursor.getColumnIndex(Contract.TODO_STATUS));
+            @SuppressLint("Range") int status = cursor.getInt(cursor.getColumnIndex(Contract.TODO_STATUS));
             @SuppressLint("Range") long id = cursor.getLong(cursor.getColumnIndex(Contract.TODO_ID));
-            ListItem listItem = new ListItem(title, content, id,date,end,photo);
+            ListItem listItem = new ListItem(title, content, id,date,status,end,photo);
             todos.add(listItem);
         } while (cursor.moveToNext());
         cursor.close();
@@ -121,9 +109,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         adapter=new CalendarAdapter(this,todos);
         listView.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-
-
-
     }
 
     private void showPopupMenu(View view) {
@@ -155,9 +140,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onRestart() {
         super.onRestart();
         Intent intent = getIntent();
-//        overridePendingTransition(0, 0);
+        overridePendingTransition(0, 0);
         finish();
-//        overridePendingTransition(0, 0);
+        overridePendingTransition(0, 0);
         startActivity(intent);
     }
     @Override

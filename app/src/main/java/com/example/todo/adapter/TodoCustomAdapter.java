@@ -35,9 +35,8 @@ public class TodoCustomAdapter extends ArrayAdapter<ListItem> {
     private Context mContext;
     private ArrayList<ListItem> mListItems;
     private DeleteButtonClickListener mDeleteButtonClickListener;
-    private boolean isChecked;
     private static String REGEX_CHINESE = "[\u4e00-\u9fa5]";
-    private boolean flag=false;
+    private boolean isChecked=false;
     private static SQLiteDatabase db;
 
     public TodoCustomAdapter(@NonNull Context context, @NonNull ArrayList<ListItem> listItems, DeleteButtonClickListener deleteButtonClickListener) {
@@ -94,33 +93,10 @@ public class TodoCustomAdapter extends ArrayAdapter<ListItem> {
         viewHolder.date.setText(item.getDate());
         viewHolder.end.setText(item.getEnd());
 
-        // 获取当前事项的id
-        long id = getItem(position).getId();
-        String itemid = String.valueOf(id);
 
 
-        if (item.getStatus()==0){
-            Long it =item.getId();
-            String string2 = String.valueOf(it);
+//         获取当前事项的id
 
-            String string=item.getEnd();
-            string = string.replaceAll(REGEX_CHINESE,"");
-            int b=Integer.parseInt(string);
-
-            final Calendar c = Calendar.getInstance();
-            int year = c.get(Calendar.YEAR);
-            int month = c.get(Calendar.MONTH)+1;
-            int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
-            String str=year+"年"+month+"月"+dayOfMonth+"日";
-            str = str.replaceAll(REGEX_CHINESE,"");
-            int a=Integer.parseInt(str);
-            if (a>b){
-                ContentValues contentValues=new ContentValues();
-                contentValues.put(Contract.TODO_STATUS,2);
-                db.update(Contract.TODO_TABLE_NAME,contentValues,Contract.TODO_ID + "=?",new String[]{string2});
-            }
-
-        }
 
 
         //延期事件设置状态为2
@@ -128,10 +104,12 @@ public class TodoCustomAdapter extends ArrayAdapter<ListItem> {
                 viewHolder.linear.setBackgroundColor(Color.RED);
         }
 
+
         viewHolder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+
 //                Toast.makeText(mContext, ""+isChecked, Toast.LENGTH_SHORT).show();
                 long id = getItem(position).getId();
                 String string = String.valueOf(id);
