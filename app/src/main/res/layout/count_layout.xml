@@ -23,7 +23,6 @@
             android:layout_margin="10dp"
             android:textSize="50px"
             android:hint="请选择开始日期"
-            android:textColor="@color/blue"
             android:background="@drawable/edit_background"
             android:layout_height="match_parent"
             />
@@ -47,7 +46,6 @@
             android:layout_margin="10dp"
             android:textSize="50px"
             android:hint="请选择截止日期"
-            android:textColor="@color/blue"
             android:background="@drawable/edit_background"
             android:layout_height="match_parent"
             />
@@ -67,11 +65,12 @@
     </Space>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp">
+        android:layout_height="40dp">
         <TextView
             android:layout_width="0dp"
             android:layout_weight="2"
-            android:text="选择日期范围内todo数量"
+            android:textSize="25dp"
+            android:text="todo总数"
             android:textColor="@color/blue"
             android:layout_height="match_parent">
         </TextView>
@@ -79,17 +78,20 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:id="@+id/number"
+            android:textSize="20dp"
+
             android:layout_height="match_parent">
         </TextView>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp">
+        android:layout_height="40dp">
         <TextView
             android:layout_width="0dp"
             android:layout_weight="2"
             android:text="完成todo数量"
-            android:textColor="@color/blue"
+            android:textColor="@color/black"
+            android:textSize="20dp"
 
             android:layout_height="match_parent">
         </TextView>
@@ -97,17 +99,20 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:id="@+id/finish"
+            android:textSize="20dp"
+
             android:layout_height="match_parent">
         </TextView>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp">
+        android:layout_height="40dp">
         <TextView
             android:layout_width="0dp"
             android:layout_weight="2"
-            android:text="取消todo数量"
-            android:textColor="@color/blue"
+            android:text="未完成todo数量"
+            android:textColor="@color/black"
+            android:textSize="20dp"
 
             android:layout_height="match_parent">
         </TextView>
@@ -115,17 +120,20 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:id="@+id/cancel"
+            android:textSize="20dp"
+
             android:layout_height="match_parent">
         </TextView>
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="30dp">
+        android:layout_height="40dp">
         <TextView
             android:layout_width="0dp"
             android:layout_weight="2"
             android:text="逾期todo数量"
-            android:textColor="@color/blue"
+            android:textColor="@color/black"
+            android:textSize="20dp"
 
             android:layout_height="match_parent">
         </TextView>
@@ -133,9 +141,17 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:id="@+id/delay"
+            android:textSize="20dp"
+
             android:layout_height="match_parent">
         </TextView>
     </LinearLayout>
+    <com.androidx.widget.CircleStatisticsView
+        android:id="@+id/csv"
+        android:layout_width="match_parent"
+        android:background="@android:color/white"
+        android:layout_height="wrap_content"/>
+
 
 
 

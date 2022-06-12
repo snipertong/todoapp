@@ -21,20 +21,25 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
 
+import com.androidx.widget.CircleStatisticsView;
+import com.androidx.widget.Colors;
+import com.androidx.widget.Statistical;
 import com.example.todo.Sql.Contract;
 import com.example.todo.Sql.TodoOpenHelper;
 import com.example.todo.widget.DragFloatActionButton;
 import com.example.todo.widget.ListItem;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class CountActivity extends AppCompatActivity {
     private TextView start,end,number,delay,finish,cancel;
     private Button startbutton,endbutton;
     private static String REGEX_CHINESE = "[\u4e00-\u9fa5]";
     private int a,b;
-    private String[] selectionArgs;
+    private String number1,number2,number3,number4;
 
 
     @Override
@@ -62,12 +67,10 @@ public class CountActivity extends AppCompatActivity {
         int dayOfMonth = c.get(Calendar.DAY_OF_MONTH);
         start.setText(year+"年"+month+"月"+dayOfMonth+"日");
         end.setText(year+"年"+month2+"月"+dayOfMonth+"日");
-        String string1=start.getText().toString();
-        String string2=start.getText().toString();
-        string1 = string1.replaceAll(REGEX_CHINESE,"");
-        int st=Integer.parseInt(string1);
-        string2 = string2.replaceAll(REGEX_CHINESE,"");
-        int en=Integer.parseInt(string1);
+
+
+
+
 
 
         TodoOpenHelper todoOpenHelper = TodoOpenHelper.getInstance(getApplicationContext());
@@ -75,32 +78,53 @@ public class CountActivity extends AppCompatActivity {
 
         Cursor cursor = db.query(Contract.TODO_TABLE_NAME, null, null, null, null, null, null);
         int num=cursor.getCount();
-        String unmber1=num + "";
-        number.setText(unmber1);
+        number1=String.valueOf(num);
+        number.setText(number1);
         cursor.close();
 
         String select=0+"";
         Cursor cursor1 = db.query(Contract.TODO_TABLE_NAME, null, "status=?", new String[]{select}, null, null, null);
         int num1=cursor1.getCount();
-        String unmber2=num1 + "";
-        cancel.setText(unmber2);
+        number2=String.valueOf(num1);
+        cancel.setText(number2);
         cursor1.close();
 
         String select1=1+"";
         Cursor cursor2 = db.query(Contract.TODO_TABLE_NAME, null, "status=?", new String[]{select1}, null, null, null);
         int num2=cursor2.getCount();
-        String unmber3=num2 + "";
-        finish.setText(unmber3);
+        number3=String.valueOf(num2);
+        finish.setText(number3);
         cursor2.close();
 
         String select2=2+"";
         Cursor cursor3 = db.query(Contract.TODO_TABLE_NAME, null, "status=?", new String[]{select2}, null, null, null);
         int num3=cursor3.getCount();
-        String unmber4=num3 + "";
-        delay.setText(unmber4);
+        number4=String.valueOf(num3);
+        delay.setText(number4);
         cursor3.close();
 
         db.close();
+
+        CircleStatisticsView csv = findViewById(R.id.csv);
+        List<String> data = new ArrayList<>();
+        data.add(number3);
+        data.add(number2);
+        data.add(number4);
+//构建显示数据
+        float percent[] = Statistical.toPercent(data);
+        int color[] = Colors.randomColors(data.size());
+        String[] markBottom = Statistical.toMarks(data);
+        String[] markTop = {"完成", "未完成", "逾期"};
+        List<Statistical> list = new ArrayList<>();
+        for (int i = 0; i < percent.length; i++) {
+            list.add(new Statistical(percent[i], color[i], color[i], markTop[i], markBottom[i]));
+        }
+//设置数据
+        csv.setDataSource(list);
+
+
+
+
 
 
         navi.setOnClickListener(new View.OnClickListener() {
@@ -183,15 +207,6 @@ public class CountActivity extends AppCompatActivity {
                 builder.create().show();
             }
         });
-
-
-
-
-
-
-
-
-
     }
 
     
